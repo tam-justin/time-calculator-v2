@@ -36,9 +36,14 @@ npm run lint     # Run ESLint
 ### YouTube URL → Duration Flow
 1. User pastes a YouTube URL (`youtube.com/watch?v=`, `youtu.be/`, etc.)
 2. POST to `/api/youtube-duration` with the URL
-3. API route extracts video ID, calls YouTube Data API v3: `GET https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id={VIDEO_ID}&key={API_KEY}`
+3. API route validates the extracted video ID against `/^[a-zA-Z0-9_-]{11}$/`, checks the in-process cache, then calls YouTube Data API v3: `GET https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id={VIDEO_ID}&key={API_KEY}`
 4. Parse ISO 8601 duration (`PT1H2M3S`) from `contentDetails.duration`, pull title from `snippet.title`
-5. Return `{ duration: "HH:MM:SS", title: string }` to the client
+5. Cache the result by video ID; return `{ duration: "HH:MM:SS", title: string }` to the client
+
+### API Route Security (`/api/youtube-duration`)
+- **Rate limiting**: 20 requests per IP per minute (keyed on `x-forwarded-for`)
+- **Video ID validation**: strict regex before interpolating into the API URL
+- **In-process cache**: module-level `Map` keyed by video ID — same ID never hits the YouTube API twice per server lifetime
 
 ## Environment Variables
 
