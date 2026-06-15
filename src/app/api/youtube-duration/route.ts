@@ -1,26 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractYouTubeId, parseISO8601Duration, secondsToHMS } from "@/lib/time";
-
-type CachedResult = { duration: string; title: string };
-const cache = new Map<string, CachedResult>();
-
-// Rate limiter: max 20 requests per IP per minute
-const RATE_LIMIT = 20;
-const RATE_WINDOW_MS = 60_000;
-type RateEntry = { count: number; windowStart: number };
-const rateLimiter = new Map<string, RateEntry>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimiter.get(ip);
-  if (!entry || now - entry.windowStart > RATE_WINDOW_MS) {
-    rateLimiter.set(ip, { count: 1, windowStart: now });
-    return false;
-  }
-  if (entry.count >= RATE_LIMIT) return true;
-  entry.count++;
-  return false;
-}
+import { isRateLimited } from "@/lib/rate-limit";
+import { videoCache } from "@/lib/video-cache";
 
 const VALID_VIDEO_ID = /^[a-zA-Z0-9_-]{11}$/;
 
@@ -37,8 +18,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
   }
 
-  if (cache.has(videoId)) {
-    return NextResponse.json(cache.get(videoId));
+  if (videoCache.has(videoId)) {
+    return NextResponse.json(videoCache.get(videoId));
   }
 
   const apiKey = process.env.YOUTUBE_API_KEY;
@@ -58,10 +39,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Video not found" }, { status: 404 });
   }
 
-  const result: CachedResult = {
-    duration: secondsToHMS(parseISO8601Duration(item.contentDetails.duration)),
+  const seconds = parseISO8601Duration(item.contentDetails.duration);
+  const result = {
+    duration: secondsToHMS(seconds),
     title: item.snippet.title as string,
+    seconds,
+    thumbnail: (item.snippet.thumbnails?.medium?.url ?? item.snippet.thumbnails?.default?.url ?? "") as string,
   };
-  cache.set(videoId, result);
+  videoCache.set(videoId, result);
   return NextResponse.json(result);
 }
