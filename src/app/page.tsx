@@ -493,7 +493,7 @@ export default function Home() {
                       <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }}
-                        className="text-neutral-600 hover:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                        className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
                         aria-label="Remove playlist"
                       >×</button>
                     </li>
@@ -513,7 +513,7 @@ export default function Home() {
                       <span className="font-mono text-sm tabular-nums text-neutral-400 shrink-0">{video.duration}</span>
                       <button
                         onClick={() => removePlaylistVideo(entry.id, video.id)}
-                        className="text-neutral-600 hover:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                        className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
                         aria-label="Remove video"
                       >×</button>
                     </li>
@@ -540,7 +540,7 @@ export default function Home() {
                     <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
                     <button
                       onClick={() => removeEntry(entry.id)}
-                      className="text-neutral-600 hover:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                      className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
                       aria-label="Remove"
                     >×</button>
                   </li>
@@ -578,7 +578,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-800 px-6 py-4 text-center text-xs text-neutral-600">
+      <footer className="border-t border-neutral-800 px-4 sm:px-6 py-4 text-center text-xs text-neutral-600">
         by tam-justin
       </footer>
     </div>
