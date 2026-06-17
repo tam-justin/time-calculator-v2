@@ -345,17 +345,17 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen font-sans">
       {/* Header */}
-      <header className="border-b border-neutral-800 px-6 py-5">
-        <h1 className="text-2xl font-semibold tracking-tight">Time Calculator</h1>
+      <header className="border-b border-neutral-800 px-4 sm:px-6 py-4 sm:py-5">
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Time Calculator</h1>
         <p className="text-sm text-neutral-400 mt-0.5">
           Add durations manually or from YouTube videos
         </p>
       </header>
 
       {/* Main */}
-      <main className="flex flex-1 gap-6 p-6 max-w-5xl w-full mx-auto">
+      <main className="flex flex-col lg:flex-row flex-1 gap-6 p-4 sm:p-6 max-w-5xl w-full mx-auto">
         {/* Left: inputs + total */}
-        <div className="flex flex-col gap-6 w-80 shrink-0">
+        <div className="flex flex-col gap-4 sm:gap-6 lg:w-80 lg:shrink-0">
           {/* Manual input */}
           <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4">
@@ -417,7 +417,7 @@ export default function Home() {
           </section>
 
           {/* Total */}
-          <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 mt-auto">
+          <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 lg:mt-auto">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">
               Total
             </h2>
@@ -431,7 +431,7 @@ export default function Home() {
         </div>
 
         {/* Right: entry list */}
-        <div className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col">
+        <div className="flex-1 min-h-0 bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col lg:max-h-none max-h-[50vh]">
           {entries.length === 0 ? (
             <div className="flex flex-1 items-center justify-center text-neutral-600 text-sm">
               No entries yet
