@@ -89,9 +89,9 @@ function buildRenderRows(pageRows: VisibleRow[]): RenderRow[] {
   return result;
 }
 
-function Thumbnail({ src, alt }: { src?: string; alt: string }) {
+function Thumbnail({ src, alt, small }: { src?: string; alt: string; small?: boolean }) {
   return (
-    <div className="relative w-[106px] h-[60px] shrink-0 rounded overflow-hidden bg-neutral-800">
+    <div className={`relative shrink-0 rounded overflow-hidden bg-neutral-800 ${small ? "w-[72px] h-[41px]" : "w-[106px] h-[60px]"}`}>
       {src && (
         <Image src={src} alt={alt} fill className="object-cover" unoptimized />
       )}
@@ -444,19 +444,15 @@ export default function Home() {
                   return (
                     <li
                       key={`pc-cont-${entry.id}`}
-                      className="flex items-center gap-4 px-5 py-2 bg-neutral-800/30 border-l-2 border-neutral-700 cursor-pointer"
+                      className="flex items-center gap-3 px-4 sm:px-5 py-2 bg-neutral-800/30 border-l-2 border-neutral-700 cursor-pointer"
                       onClick={() => togglePlaylist(entry.id)}
                     >
-                      <div className="w-20 shrink-0 flex items-center">
-                        <div className="w-5 shrink-0 flex items-center">
-                          <svg className="w-3 h-3 text-red-500 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                        <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">Playlist</span>
-                      </div>
+                      <svg className="w-3 h-3 text-red-500 rotate-90 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500 shrink-0">Playlist</span>
                       <span className="text-xs text-neutral-500 truncate">
-                        {entry.label} <span className="text-neutral-600">cont'd</span>
+                        {entry.label} <span className="text-neutral-600">cont&apos;d</span>
                       </span>
                     </li>
                   );
@@ -468,34 +464,58 @@ export default function Home() {
                   return (
                     <li
                       key={`ph-${entry.id}`}
-                      className="flex items-center gap-4 px-5 py-3 hover:bg-neutral-800/50 transition-colors group cursor-pointer"
+                      className="px-4 sm:px-5 py-3 hover:bg-neutral-800/50 transition-colors group cursor-pointer"
                       onClick={() => togglePlaylist(entry.id)}
                     >
-                      <div className="w-20 shrink-0 flex items-center">
-                        <div className="w-5 shrink-0 flex items-center">
+                      {/* Mobile layout */}
+                      <div className="sm:hidden">
+                        <div className="flex items-center gap-2">
                           <svg
-                            className={`w-3 h-3 text-red-500 transition-transform ${isExpanded ? "rotate-90" : ""}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2.5}
+                            className={`w-3 h-3 text-red-500 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
+                          <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">Playlist</span>
+                          <span className="text-xs text-neutral-500 ml-1">{entry.children.length} videos</span>
+                          <span className="flex-1" />
+                          <button
+                            onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }}
+                            className="text-neutral-500 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none p-1"
+                            aria-label="Remove playlist"
+                          >×</button>
                         </div>
-                        <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">
-                          Playlist
-                        </span>
+                        <div className="flex items-center gap-3 mt-2">
+                          <Thumbnail small src={entry.children[0]?.thumbnail} alt={entry.label} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-neutral-200 truncate">{entry.label}</p>
+                            <p className="font-mono text-xs text-neutral-400 mt-0.5">{entry.duration}</p>
+                          </div>
+                        </div>
                       </div>
-                      <Thumbnail src={entry.children[0]?.thumbnail} alt={entry.label} />
-                      <span className="flex-1 text-sm text-neutral-200 truncate">{entry.label}</span>
-                      <span className="text-xs text-neutral-500 shrink-0">{entry.children.length} videos</span>
-                      <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }}
-                        className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
-                        aria-label="Remove playlist"
-                      >×</button>
+                      {/* Desktop layout */}
+                      <div className="hidden sm:flex items-center gap-4">
+                        <div className="w-20 shrink-0 flex items-center">
+                          <div className="w-5 shrink-0 flex items-center">
+                            <svg
+                              className={`w-3 h-3 text-red-500 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                          <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">Playlist</span>
+                        </div>
+                        <Thumbnail src={entry.children[0]?.thumbnail} alt={entry.label} />
+                        <span className="flex-1 text-sm text-neutral-200 truncate">{entry.label}</span>
+                        <span className="text-xs text-neutral-500 shrink-0">{entry.children.length} videos</span>
+                        <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }}
+                          className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                          aria-label="Remove playlist"
+                        >×</button>
+                      </div>
                     </li>
                   );
                 }
@@ -505,17 +525,33 @@ export default function Home() {
                   return (
                     <li
                       key={`pc-${video.id}`}
-                      className="flex items-center gap-4 px-5 py-3 bg-neutral-950/40 border-l-2 border-neutral-700 hover:bg-neutral-800/30 transition-colors group"
+                      className="px-4 sm:px-5 py-3 bg-neutral-950/40 border-l-2 border-neutral-700 hover:bg-neutral-800/30 transition-colors group"
                     >
-                      <div className="w-20 shrink-0" />
-                      <Thumbnail src={video.thumbnail} alt={video.label} />
-                      <span className="flex-1 text-sm text-neutral-300 truncate">{video.label}</span>
-                      <span className="font-mono text-sm tabular-nums text-neutral-400 shrink-0">{video.duration}</span>
-                      <button
-                        onClick={() => removePlaylistVideo(entry.id, video.id)}
-                        className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
-                        aria-label="Remove video"
-                      >×</button>
+                      {/* Mobile layout */}
+                      <div className="sm:hidden flex items-center gap-3 pl-2">
+                        <Thumbnail small src={video.thumbnail} alt={video.label} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-neutral-300 truncate">{video.label}</p>
+                          <p className="font-mono text-xs text-neutral-400 mt-0.5">{video.duration}</p>
+                        </div>
+                        <button
+                          onClick={() => removePlaylistVideo(entry.id, video.id)}
+                          className="text-neutral-500 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none p-1 shrink-0"
+                          aria-label="Remove video"
+                        >×</button>
+                      </div>
+                      {/* Desktop layout */}
+                      <div className="hidden sm:flex items-center gap-4">
+                        <div className="w-20 shrink-0" />
+                        <Thumbnail src={video.thumbnail} alt={video.label} />
+                        <span className="flex-1 text-sm text-neutral-300 truncate">{video.label}</span>
+                        <span className="font-mono text-sm tabular-nums text-neutral-400 shrink-0">{video.duration}</span>
+                        <button
+                          onClick={() => removePlaylistVideo(entry.id, video.id)}
+                          className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                          aria-label="Remove video"
+                        >×</button>
+                      </div>
                     </li>
                   );
                 }
@@ -524,25 +560,54 @@ export default function Home() {
                 return (
                   <li
                     key={`fe-${entry.id}`}
-                    className="flex items-center gap-4 px-5 py-3 hover:bg-neutral-800/50 transition-colors group"
+                    className="px-4 sm:px-5 py-3 hover:bg-neutral-800/50 transition-colors group"
                   >
-                    <div className="w-20 shrink-0 flex items-center">
-                      <div className="w-5 shrink-0" />
-                      <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">
-                        {entry.type === "youtube" ? "YT Video" : "Manual"}
-                      </span>
+                    {/* Mobile layout */}
+                    <div className="sm:hidden">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">
+                          {entry.type === "youtube" ? "YT Video" : "Manual"}
+                        </span>
+                        <span className="flex-1" />
+                        {entry.type === "manual" && (
+                          <span className="font-mono text-sm tabular-nums text-neutral-300 mr-1">{entry.duration}</span>
+                        )}
+                        <button
+                          onClick={() => removeEntry(entry.id)}
+                          className="text-neutral-500 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none p-1"
+                          aria-label="Remove"
+                        >×</button>
+                      </div>
+                      {entry.type === "youtube" && (
+                        <div className="flex items-center gap-3 mt-2">
+                          <Thumbnail small src={entry.thumbnail} alt={entry.label} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-neutral-200 truncate">{entry.label}</p>
+                            <p className="font-mono text-xs text-neutral-400 mt-0.5">{entry.duration}</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {entry.type === "youtube" && <Thumbnail src={entry.thumbnail} alt={entry.label} />}
-                    {entry.type === "youtube" && (
-                      <span className="flex-1 text-sm text-neutral-200 truncate">{entry.label}</span>
-                    )}
-                    {entry.type === "manual" && <span className="flex-1" />}
-                    <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
-                    <button
-                      onClick={() => removeEntry(entry.id)}
-                      className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 sm:opacity-0 sm:group-hover:opacity-100"
-                      aria-label="Remove"
-                    >×</button>
+                    {/* Desktop layout */}
+                    <div className="hidden sm:flex items-center gap-4">
+                      <div className="w-20 shrink-0 flex items-center">
+                        <div className="w-5 shrink-0" />
+                        <span className="text-[10px] uppercase tracking-widest font-semibold text-red-500">
+                          {entry.type === "youtube" ? "YT Video" : "Manual"}
+                        </span>
+                      </div>
+                      {entry.type === "youtube" && <Thumbnail src={entry.thumbnail} alt={entry.label} />}
+                      {entry.type === "youtube" && (
+                        <span className="flex-1 text-sm text-neutral-200 truncate">{entry.label}</span>
+                      )}
+                      {entry.type === "manual" && <span className="flex-1" />}
+                      <span className="font-mono text-sm tabular-nums text-neutral-300 shrink-0">{entry.duration}</span>
+                      <button
+                        onClick={() => removeEntry(entry.id)}
+                        className="text-neutral-600 hover:text-red-400 active:text-red-400 transition-colors text-lg leading-none ml-1 opacity-0 group-hover:opacity-100"
+                        aria-label="Remove"
+                      >×</button>
+                    </div>
                   </li>
                 );
               })}
